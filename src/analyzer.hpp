@@ -2,8 +2,8 @@
 #include <string>
 #include <map>
 
-#include "statistics.h"
-#include "word_cloud.h"
+#include "statistics.hpp"
+#include "word_cloud.hpp"
 
 class Analyzer
 {
@@ -12,22 +12,24 @@ private:
     std::vector<Statistics *> stats;
 
     // List of filtered out words
-    std::vector<std::string> filter;
+    std::vector<std::wstring> filter;
+
+    std::wstring source_path;
 
 public:
     /**
-     * @brief  Constructs analyzer over either a path to a file or a path to a directory.
+     * @brief  Constructs ::wstring over either a path to a file or a path to a directory.
      * @note   Only text files are supported. Directories are searched recursively.
      * @param  path: Path to a file or a directory
      */
-    Analyzer(std::string file_path);
+    Analyzer(std::wstring file_path);
     /**
-     * @brief  Constructs analyzer over either a path to a file or a path to a directory.
+     * @brief  Constructs ::wstring over either a path to a file or a path to a directory.
      * @note   Only text files are supported. Directories are searched recursively.
      * @param  path: Path to a file or a directory
      * @param  filter: Words to be filtered out of the analysis
      */
-    Analyzer(std::string path, std::vector<std::string> filter);
+    Analyzer(std::wstring path, std::vector<std::wstring> filter);
 
     ~Analyzer();
 
@@ -35,7 +37,7 @@ public:
      * @brief  Sets the list of filtered out words.
      * @param  filter: Vector of words to be filtered out
      */
-    void set_filters(std::vector<std::string> filter);
+    void set_filters(std::vector<std::wstring> filter);
 
     /**
      * @brief  Counts every word loaded from path.
@@ -56,28 +58,27 @@ public:
      * @param  file: Path to a file
      * @retval Number of words in a file
      */
-    long get_word_count_for_file(std::string file);
+    long get_word_count_for_file(std::wstring file);
     /**
      * @brief  Counts every unique word loaded from set file.
      * @note   Discards filtered out words.
      * @param  file: Path to a file
-     * @retval 
      */
-    long get_unique_word_count_for_file(std::string file);
+    long get_unique_word_count_for_file(std::wstring file);
 
     /**
      * @brief  Generates an n-gram for set word.
      * @note   Discards filtered out words. Throws if set word is filtered out.
      * @param  word: Starting point for n-gram
      */
-    void generate_n_gram(std::string word);
+    void generate_n_gram(std::wstring word);
     /**
      * @brief  Generates an n-gram for set word and file.
      * @note   Discards filtered out words. Throws if set word is filtered out.
      * @param  word: Starting point for n-gram
      * @param  file: Path to a file
      */
-    void generate_n_gram_for_file(std::string word, std::string file);
+    void generate_n_gram_for_file(std::wstring word, std::wstring file);
 
     /**
      * @brief  Generates a word cloud.
@@ -89,5 +90,5 @@ public:
      * @note   Discards filtered out words.
      * @param  file: Path to a file
      */
-    void generate_word_cloud_for_file(std::string file);
+    void generate_word_cloud_for_file(std::wstring file);
 };

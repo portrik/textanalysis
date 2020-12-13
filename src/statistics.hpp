@@ -4,22 +4,22 @@
 class Statistics
 {
 private:
-    std::vector<std::string> words;
-    std::vector<std::string> filter;
-    std::string file_path;
+    std::vector<std::wstring> words;
+    std::vector<std::wstring> filter;
+    std::wstring file_path;
 
 public:
     /**
      * @brief  Creates Statistics for a file.
      * @param  file_path: Path to a file
      */
-    Statistics(std::string file_path);
+    Statistics(std::wstring file_path);
     /**
      * @brief  Creates Statistics for a file with filter.
      * @param  file_path: Path to a file
      * @param  filter: Vector of words to filter out
      */
-    Statistics(std::string file_path, std::vector<std::string> filter);
+    Statistics(std::wstring file_path, std::vector<std::wstring> filter);
 
     ~Statistics() = default;
 
@@ -41,8 +41,19 @@ public:
      * @note   Includes the "filtered out" words.
      * @retval Every word from the file
      */
-    std::vector<std::string> get_words();
+    std::vector<std::wstring> get_words();
 
+    /**
+     * @brief  Sets the filter vector for statistics.
+     * @param  filter: Words to be filtered out.
+     */
+    void set_filter(std::vector<std::wstring> filter);
+
+    /**
+     * @brief  Returns the file path.
+     * @retval String with file path
+     */
+    std::wstring get_file_path();
 private:
-    std::vector<std::string> parse_file(std::string file_path);
+    std::vector<std::wstring> parse_file(std::wstring file_path);
 };

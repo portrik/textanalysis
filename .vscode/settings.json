@@ -65,6 +65,9 @@
         "deque": "cpp",
         "iomanip": "cpp",
         "map": "cpp",
-        "stack": "cpp"
+        "stack": "cpp",
+        "codecvt": "cpp",
+        "fstream": "cpp",
+        "regex": "cpp"
     }
 }

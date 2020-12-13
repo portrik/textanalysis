@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 
-#include "analyzer.h"
+#include "analyzer.hpp"
 
 // TODO: Word count count, unique word count, n-grams, word clouds
 // TODO: To file and per file
@@ -10,5 +10,4 @@
 int main()
 {
     std::cout << "Hello There!\n";
-    Analyzer a = Analyzer("/Users/patrik.dvoracek/Desktop/Gits/Personal/");
 }
