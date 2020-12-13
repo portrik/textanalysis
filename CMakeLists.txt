@@ -5,15 +5,12 @@ set( CMAKE_CXX_STANDARD 14 )
 set( CMAKE_CXX_STANDARD_REQUIRED ON )
 set( CMAKE_CXX_EXTENSIONS OFF )
 
-include_directories( ./include ./src )
-
-set (core-files main.cpp analyzer.h analyzer.cpp )
-
-add_executable( textanalysis ./src/main.cpp )
-
-set ( THREADS_PREFER_PTHREAD_FLAG ON)
-find_package( Threads REQUIRED )
-target_link_libraries( textanalysis Threads::Threads )
+set(core-files
+        ./src/analyzer.cpp
+        ./src/analyzer.hpp
+        ./src/statistics.cpp
+        ./src/statistics.hpp
+        ./src/word_cloud.hpp)
 
 if ( CMAKE_CXX_COMPILER_ID MATCHES "Clang|AppleClang|GNU")
     add_compile_options( -Wall -Wextra -Wunreachable-code -Wpedantic )
@@ -21,3 +18,9 @@ endif()
 if ( CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     add_compile_options( /W4 )
 endif()
+
+add_executable( textanalysis ${core-files} ./src/main.cpp )
+
+set ( THREADS_PREFER_PTHREAD_FLAG ON)
+find_package( Threads REQUIRED )
+target_link_libraries( textanalysis Threads::Threads )
