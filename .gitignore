@@ -134,3 +134,4 @@ $RECYCLE.BIN/
 # End of https://www.toptal.com/developers/gitignore/api/macos,vscode,cmake,c++,windows,linux
 
 /build
+src/statistics.cpp

@@ -9,16 +9,16 @@
 
 namespace fs = std::filesystem;
 
-Statistics::Statistics(std::wstring file_path)
+Statistics::Statistics(std::string file_path)
 {
-    this->words = this->parse_file(file_path);
+    this->words = std::vector<std::wstring>();
     this->filter = std::vector<std::wstring>();
     this->file_path = file_path;
 }
 
-Statistics::Statistics(std::wstring file_path, std::vector<std::wstring> filter)
+Statistics::Statistics(std::string file_path, std::vector<std::wstring> filter)
 {
-    this->words = this->parse_file(file_path);
+    this->words = std::vector<std::wstring>();
     this->filter = filter;
     this->file_path = file_path;
 }
@@ -63,37 +63,45 @@ std::vector<std::wstring> Statistics::get_words()
     return this->words;
 }
 
-std::vector<std::wstring> Statistics::parse_file(std::wstring file_path)
+std::vector<std::wstring> Statistics::parse_file()
 {
     std::vector<std::wstring> result;
 
-    if (fs::is_regular_file(file_path))
+    if (fs::is_regular_file(this->file_path))
     {
-        // Opens the file with UTF-8 encoding
-        std::ifstream f(file_path);
-        std::wbuffer_convert<std::codecvt_utf8<wchar_t>> conv(f.rdbuf());
-        std::wistream wf(&conv);
-
-        // Reads the whole file into a string of wide chars
-        std::wstring file_content;
-        for (wchar_t c; wf.get(c);)
+        try
         {
-            file_content += c;
+            // Opens the file with UTF-8 encoding
+            std::ifstream f(this->file_path);
+            std::wbuffer_convert<std::codecvt_utf8<wchar_t>> conv(f.rdbuf());
+            std::wistream wf(&conv);
+
+            // Reads the whole file into a string of wide chars
+            std::wstring file_content;
+            for (wchar_t c; wf.get(c);)
+            {
+                file_content += c;
+            }
+
+            std::wregex delimiters(L"[^\\s.,:;!?()]+");
+            auto file_begin = std::wsregex_iterator(file_content.begin(), file_content.end(), delimiters);
+            auto file_end = std::wsregex_iterator();
+
+            for (std::wsregex_iterator it = file_begin; it != file_end; ++it)
+            {
+                result.push_back((*it).str());
+            }
         }
-
-        std::wregex delimiters(L"[^\\s.,:;!?()]+");
-        auto file_begin = std::wsregex_iterator(file_content.begin(), file_content.end(), delimiters);
-        auto file_end = std::wsregex_iterator();
-
-        for (std::wsregex_iterator it = file_begin; it != file_end; ++it)
+        catch (const std::exception &e)
         {
-            std::wcout << (*it).str() << "\n";
+            std::cerr << "File " << this->file_path << " could not be parsed due to an error!";
+            std::cerr << e.what() << '\n';
         }
     }
     else
     {
-        // File is not readable regular file
-        // Should throw
+        std::cout << "NON FILE\n";
+        throw "File " + this->file_path + " is not a valid text file!";
     }
 
     return result;
@@ -104,7 +112,12 @@ void Statistics::set_filter(std::vector<std::wstring> filter)
     this->filter = filter;
 }
 
-std::wstring Statistics::get_file_path()
+std::string Statistics::get_file_path()
 {
     return this->file_path;
+}
+
+void Statistics::load()
+{
+    this->words = this->parse_file();
 }

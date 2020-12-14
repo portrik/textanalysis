@@ -14,7 +14,12 @@ private:
     // List of filtered out words
     std::vector<std::wstring> filter;
 
-    std::wstring source_path;
+    std::string source_path;
+
+    /**
+     * @brief  Loads the file statistics.
+     */
+    void load();
 
 public:
     /**
@@ -22,14 +27,14 @@ public:
      * @note   Only text files are supported. Directories are searched recursively.
      * @param  path: Path to a file or a directory
      */
-    Analyzer(std::wstring file_path);
+    Analyzer(std::string file_path);
     /**
      * @brief  Constructs ::wstring over either a path to a file or a path to a directory.
      * @note   Only text files are supported. Directories are searched recursively.
      * @param  path: Path to a file or a directory
      * @param  filter: Words to be filtered out of the analysis
      */
-    Analyzer(std::wstring path, std::vector<std::wstring> filter);
+    Analyzer(std::string path, std::vector<std::wstring> filter);
 
     ~Analyzer();
 
@@ -58,13 +63,13 @@ public:
      * @param  file: Path to a file
      * @retval Number of words in a file
      */
-    long get_word_count_for_file(std::wstring file);
+    long get_word_count_for_file(std::string file);
     /**
      * @brief  Counts every unique word loaded from set file.
      * @note   Discards filtered out words.
      * @param  file: Path to a file
      */
-    long get_unique_word_count_for_file(std::wstring file);
+    long get_unique_word_count_for_file(std::string file);
 
     /**
      * @brief  Generates an n-gram for set word.
@@ -78,7 +83,7 @@ public:
      * @param  word: Starting point for n-gram
      * @param  file: Path to a file
      */
-    void generate_n_gram_for_file(std::wstring word, std::wstring file);
+    void generate_n_gram_for_file(std::wstring word, std::string file);
 
     /**
      * @brief  Generates a word cloud.
@@ -90,5 +95,5 @@ public:
      * @note   Discards filtered out words.
      * @param  file: Path to a file
      */
-    void generate_word_cloud_for_file(std::wstring file);
+    void generate_word_cloud_for_file(std::string file);
 };

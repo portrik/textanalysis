@@ -9,5 +9,16 @@
 
 int main()
 {
-    std::cout << "Hello There!\n";
+    try
+    {
+        Analyzer a = Analyzer("/Users/patrik.dvoracek/Desktop/Gits/School/private_library/target/privatelibrary-0.1.0.jar");
+
+        std::cout << "Word count in the file is " << a.get_word_count() << ".\n";
+        std::cout << "Unique word count in the file is " << a.get_unique_word_count() << ".\n";
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << "Path could not be analyzed due to an error:\n";
+        std::cerr << e.what() << "\n";
+    }
 }
