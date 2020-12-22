@@ -100,7 +100,7 @@ std::vector<std::wstring> Statistics::parse_file()
     }
     else
     {
-        std::cout << "NON FILE\n";
+        std::cerr << "File " << this->file_path << " could not be parsed due to an error!";
         throw "File " + this->file_path + " is not a valid text file!";
     }
 

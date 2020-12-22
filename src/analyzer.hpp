@@ -28,6 +28,7 @@ public:
      * @param  path: Path to a file or a directory
      */
     Analyzer(std::string file_path);
+
     /**
      * @brief  Constructs ::wstring over either a path to a file or a path to a directory.
      * @note   Only text files are supported. Directories are searched recursively.
@@ -50,6 +51,7 @@ public:
      * @retval Number of words in the path
      */
     long get_word_count();
+
     /**
      * @brief  Counts every unique word loaded from path.
      * @note   Discards filtered out words.
@@ -64,6 +66,7 @@ public:
      * @retval Number of words in a file
      */
     long get_word_count_for_file(std::string file);
+
     /**
      * @brief  Counts every unique word loaded from set file.
      * @note   Discards filtered out words.
@@ -72,24 +75,34 @@ public:
     long get_unique_word_count_for_file(std::string file);
 
     /**
-     * @brief  Generates an n-gram for set word.
-     * @note   Discards filtered out words. Throws if set word is filtered out.
-     * @param  word: Starting point for n-gram
+     * @brief Returns all of the words loaded by the analyzer.
+     * @retval Vector of words in all of the files
      */
-    void generate_n_gram(std::wstring word);
+    std::vector<std::wstring> get_words();
+
     /**
-     * @brief  Generates an n-gram for set word and file.
+     * @brief  Generates five most frequent n-grams for a file.
      * @note   Discards filtered out words. Throws if set word is filtered out.
-     * @param  word: Starting point for n-gram
-     * @param  file: Path to a file
+     * @param  size: Size of the n-gram (n)
+     * @retval Vector of pairs with n-gram as a wstring key and number of occurences
      */
-    void generate_n_gram_for_file(std::wstring word, std::string file);
+    std::vector<std::pair<std::wstring, int>> generate_n_gram(int size);
+
+    /**
+     * @brief  Generates five most frequent n-grams for a file.
+     * @note   Discards filtered out words. Throws if set word is filtered out.
+     * @param  size: Size of the n-gram (n)
+     * @param  file: Path to a file
+     * @retval Vector of pairs with n-gram as a wstring key and number of occurences
+     */
+    std::vector<std::pair<std::wstring, int>> generate_n_gram_for_file(int size, std::string file);
 
     /**
      * @brief  Generates a word cloud.
      * @note   Discards filtered out words.
      */
     void generate_word_cloud();
+
     /**
      * @brief  Generates a word cloud for set file.
      * @note   Discards filtered out words.

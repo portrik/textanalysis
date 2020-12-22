@@ -3,7 +3,7 @@
 
 #include "analyzer.hpp"
 
-// TODO: Word count count, unique word count, n-grams, word clouds
+// TODO: N-grams, word clouds
 // TODO: To file and per file
 // TODO: Filters
 
@@ -11,10 +11,20 @@ int main()
 {
     try
     {
-        Analyzer a = Analyzer("/Users/patrik.dvoracek/Desktop/Gits/School/private_library/target/privatelibrary-0.1.0.jar");
+        Analyzer a = Analyzer("../test.txt");
 
         std::cout << "Word count in the file is " << a.get_word_count() << ".\n";
         std::cout << "Unique word count in the file is " << a.get_unique_word_count() << ".\n";
+
+        auto grams = a.generate_n_gram(2);
+
+        for (auto it = grams.begin(); it != grams.end(); ++it)
+        {
+            if (it->second > 3)
+            {
+                std::wcout << "3-gram of " << it->first << " has " << it->second << " occurences.\n";
+            }
+        }
     }
     catch (const std::exception &e)
     {
