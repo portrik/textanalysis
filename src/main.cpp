@@ -11,7 +11,7 @@ int main()
 {
     try
     {
-        Analyzer a = Analyzer("../test.txt");
+        Analyzer a = Analyzer("example.txt");
 
         std::cout << "Word count in the file is " << a.get_word_count() << ".\n";
         std::cout << "Unique word count in the file is " << a.get_unique_word_count() << ".\n";
