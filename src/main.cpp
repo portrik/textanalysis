@@ -3,15 +3,14 @@
 
 #include "analyzer.hpp"
 
-// TODO: N-grams, word clouds
-// TODO: To file and per file
-// TODO: Filters
+// TODO: Word clouds
+// TODO: Threading and CMakeList
 
 int main()
 {
     try
     {
-        Analyzer a = Analyzer("example.txt");
+        Analyzer a = Analyzer("../example.txt", true);
 
         std::cout << "Word count in the file is " << a.get_word_count() << ".\n";
         std::cout << "Unique word count in the file is " << a.get_unique_word_count() << ".\n";

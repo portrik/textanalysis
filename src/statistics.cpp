@@ -9,18 +9,20 @@
 
 namespace fs = std::filesystem;
 
-Statistics::Statistics(std::string file_path)
+Statistics::Statistics(std::string file_path, bool case_sensitive)
 {
     this->words = std::vector<std::wstring>();
     this->filter = std::vector<std::wstring>();
     this->file_path = file_path;
+    this->case_sensitive = case_sensitive;
 }
 
-Statistics::Statistics(std::string file_path, std::vector<std::wstring> filter)
+Statistics::Statistics(std::string file_path, std::vector<std::wstring> filter, bool case_sensitive)
 {
     this->words = std::vector<std::wstring>();
     this->filter = filter;
     this->file_path = file_path;
+    this->case_sensitive = case_sensitive;
 }
 
 int Statistics::get_word_count()
@@ -89,7 +91,14 @@ std::vector<std::wstring> Statistics::parse_file()
 
             for (std::wsregex_iterator it = file_begin; it != file_end; ++it)
             {
-                result.push_back((*it).str());
+                auto word = (*it).str();
+
+                if (this->case_sensitive)
+                {
+                    std::transform(word.begin(), word.end(), word.begin(), ::tolower);
+                }
+
+                result.push_back(word);
             }
         }
         catch (const std::exception &e)

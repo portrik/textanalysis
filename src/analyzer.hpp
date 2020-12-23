@@ -16,6 +16,8 @@ private:
 
     std::string source_path;
 
+    bool case_sensitive;
+
     /**
      * @brief  Loads the file statistics.
      */
@@ -26,16 +28,18 @@ public:
      * @brief  Constructs ::wstring over either a path to a file or a path to a directory.
      * @note   Only text files are supported. Directories are searched recursively.
      * @param  path: Path to a file or a directory
+     * @param case_sensitive: Should case be ignored?
      */
-    Analyzer(std::string file_path);
+    Analyzer(std::string file_path, bool case_sensitive = false);
 
     /**
      * @brief  Constructs ::wstring over either a path to a file or a path to a directory.
      * @note   Only text files are supported. Directories are searched recursively.
      * @param  path: Path to a file or a directory
      * @param  filter: Words to be filtered out of the analysis
+     * @param  case_sensitive: Should case be ignored?
      */
-    Analyzer(std::string path, std::vector<std::wstring> filter);
+    Analyzer(std::string path, std::vector<std::wstring> filter, bool case_sensitive = false);
 
     ~Analyzer();
 

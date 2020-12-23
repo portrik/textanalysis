@@ -7,19 +7,22 @@ private:
     std::vector<std::wstring> words;
     std::vector<std::wstring> filter;
     std::string file_path;
+    bool case_sensitive;
 
 public:
     /**
      * @brief  Creates Statistics for a file.
      * @param  file_path: Path to a file
+      *@param  case_sensitive: Should case be ignored?
      */
-    Statistics(std::string file_path);
+    Statistics(std::string file_path, bool case_sensitive);
     /**
      * @brief  Creates Statistics for a file with filter.
      * @param  file_path: Path to a file
      * @param  filter: Vector of words to filter out
+      *@param  case_sensitive: Should case be ignored?
      */
-    Statistics(std::string file_path, std::vector<std::wstring> filter);
+    Statistics(std::string file_path, std::vector<std::wstring> filter, bool case_sensitive);
 
     ~Statistics() = default;
 

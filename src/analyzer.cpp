@@ -42,7 +42,7 @@ void Analyzer::load()
             else if (fs::is_regular_file(path))
             {
                 std::cout << "Adding " << path << "\n";
-                stats.push_back(new Statistics(path));
+                stats.push_back(new Statistics(path, this->case_sensitive));
             }
         }
 
@@ -59,20 +59,22 @@ void Analyzer::load()
     }
 }
 
-Analyzer::Analyzer(std::string file_path)
+Analyzer::Analyzer(std::string file_path, bool case_sensitive)
 {
     this->filter = std::vector<std::wstring>();
     this->stats = std::vector<Statistics *>();
     this->source_path = file_path;
+    this->case_sensitive = case_sensitive;
 
     this->load();
 }
 
-Analyzer::Analyzer(std::string file_path, std::vector<std::wstring> filter)
+Analyzer::Analyzer(std::string file_path, std::vector<std::wstring> filter, bool case_sensitive)
 {
     this->filter = filter;
     this->stats = std::vector<Statistics *>();
     this->source_path = file_path;
+    this->case_sensitive = case_sensitive;
 
     this->load();
 }
