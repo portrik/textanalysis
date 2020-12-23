@@ -55,7 +55,7 @@ void Analyzer::load()
     else
     {
         // Not a valid path, should throw
-        throw std::invalid_argument("Supplied path \"" + this->source_path + " is not a valid file or directory path!");
+        throw std::invalid_argument("Supplied path \"" + this->source_path + "\" is not a valid file or directory path!");
     }
 }
 

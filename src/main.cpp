@@ -6,28 +6,41 @@
 // TODO: Word clouds
 // TODO: Threading and CMakeList
 
-int main()
+static void show_usage()
 {
-    try
+    std::cerr << "Options of TextAnalysis:\n"
+              << "Options:\n"
+              << "\t-h,--help\t\t\tShow this help message. Off by default\n"
+              << "\t/file/path\t\t\tPath to a file or a directory to analyze. Required\n"
+              << "\t-w,--words\t\t\tTurns off printing of number of words. On by default.\n"
+              << "\t-u,--uniqueWords\t\tTurns off printing of number of unique words. On by default\n"
+              << "\t-p,--perFile\t\t\tGenerate report per file. Off by default\n"
+              << "\t-t,--target /file/path\t\tGenerates report into a text file with set path. Off by default\n"
+              << "\t-n,--ngrams x\t\t\tGenerates ngrams of size x. x must be 1 or higher. Off by default\n"
+              << "\t-c,--ignoreCase\t\t\tIgnore case sensitivity. False by default\n"
+              << "\t-f,--filter x,y,z\t\tSet of words to filter out. Must be separated by \",\". Empty by default\n"
+              << "\t-ff,--fileFilter /file/path\tPath to a file with words to filter out. Each line must contain exactly one word. Empty by default\n";
+}
+
+int main(int argc, char *argv[])
+{
+    std::string source_path;
+    std::vector<std::wstring> filtered_words;
+    std::string target_path;
+    bool ignore_case = false;
+    bool print_words = true;
+    bool print_unqiue_words = true;
+    bool per_file = false;
+    int n_gram_size = INT32_MIN;
+
+    for (int i = 1; i < argc; ++i)
     {
-        Analyzer a = Analyzer("../example.txt", true);
+        std::string arg = argv[i];
 
-        std::cout << "Word count in the file is " << a.get_word_count() << ".\n";
-        std::cout << "Unique word count in the file is " << a.get_unique_word_count() << ".\n";
-
-        auto grams = a.generate_n_gram(2);
-
-        for (auto it = grams.begin(); it != grams.end(); ++it)
+        if (arg == "-h" || arg == "--help")
         {
-            if (it->second > 3)
-            {
-                std::wcout << "3-gram of " << it->first << " has " << it->second << " occurences.\n";
-            }
+            show_usage();
+            return 0;
         }
-    }
-    catch (const std::exception &e)
-    {
-        std::cerr << "Path could not be analyzed due to an error:\n";
-        std::cerr << e.what() << "\n";
     }
 }

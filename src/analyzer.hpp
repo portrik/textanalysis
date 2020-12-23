@@ -30,7 +30,7 @@ public:
      * @param  path: Path to a file or a directory
      * @param case_sensitive: Should case be ignored?
      */
-    Analyzer(std::string file_path, bool case_sensitive = false);
+    Analyzer(std::string file_path, bool case_sensitive);
 
     /**
      * @brief  Constructs ::wstring over either a path to a file or a path to a directory.
@@ -39,7 +39,7 @@ public:
      * @param  filter: Words to be filtered out of the analysis
      * @param  case_sensitive: Should case be ignored?
      */
-    Analyzer(std::string path, std::vector<std::wstring> filter, bool case_sensitive = false);
+    Analyzer(std::string path, std::vector<std::wstring> filter, bool case_sensitive);
 
     ~Analyzer();
 
