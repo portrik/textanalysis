@@ -2,6 +2,7 @@
 #include <fstream>
 #include <codecvt>
 #include <iostream>
+#include <map>
 #include <regex>
 #include <string>
 
@@ -58,6 +59,45 @@ int Statistics::get_unqiue_word_count()
     }
 
     return result.size();
+}
+
+std::vector<Statistics::n_gram> Statistics::get_n_grams(int size)
+{
+    // Hashmap is used for better performance than just going
+    // through a vector of n-grams and comparing their counts
+    std::map<std::wstring, long> grams;
+    for (unsigned long i = 0; i + size < words.size(); ++i)
+    {
+        // Creates n-gram of length defined by size
+        std::wstring gram = words.at(i);
+        for (int j = 1; j < size; ++j)
+        {
+            gram += L" " + words.at(i + j);
+        }
+
+        // If n-gram is new, 0 is inserted into it's place before incrementation
+        if (grams.find(gram) == grams.end())
+        {
+            grams.emplace(gram, 0);
+        }
+
+        ++grams.at(gram);
+    }
+
+    // Converts the map into a vector of n-gram
+    std::vector<Statistics::n_gram> result;
+    for (std::map<std::wstring, long>::iterator it = grams.begin(); it != grams.end(); ++it)
+    {
+        result.push_back(Statistics::n_gram{it->first, it->second});
+    }
+
+    // Sorts the vector by counts of n-gram occurences in descending order
+    std::sort(result.begin(), result.end(),
+              [](const Statistics::n_gram &a, const Statistics::n_gram &b) {
+                  return a.count > b.count;
+              });
+
+    return result;
 }
 
 std::vector<std::wstring> Statistics::get_words()

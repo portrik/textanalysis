@@ -7,15 +7,6 @@
 
 namespace fs = std::filesystem;
 
-/**
- * @brief Sorting function used for sorting n-gram maps.
- * @retval Is the first value larger than the second?
- */
-bool sortByValue(const std::pair<std::wstring, int> &a, const std::pair<std::wstring, int> &b)
-{
-    return (a.second > b.second);
-}
-
 void Analyzer::load()
 {
     if (fs::is_directory(this->source_path) || fs::is_regular_file(this->source_path))
@@ -41,13 +32,12 @@ void Analyzer::load()
             }
             else if (fs::is_regular_file(path))
             {
-                std::cout << "Adding " << path << "\n";
                 stats.push_back(new Statistics(path, this->case_sensitive));
             }
         }
 
         // Loads all of the words into memory
-        for (auto const &stat : this->stats)
+        for (const auto &stat : this->stats)
         {
             stat->load();
         }
@@ -101,7 +91,7 @@ long Analyzer::get_word_count()
 {
     long count = 0;
 
-    for (auto const &stat : this->stats)
+    for (const auto &stat : this->stats)
     {
         count += stat->get_word_count();
     }
@@ -113,11 +103,11 @@ long Analyzer::get_unique_word_count()
 {
     std::vector<std::wstring> result;
 
-    for (auto const &stat : this->stats)
+    for (const auto &stat : this->stats)
     {
         auto words = stat->get_words();
 
-        for (auto const &word : words)
+        for (const auto &word : words)
         {
             // Temporary variables used to remove long line
             // And to enhance readibility
@@ -134,43 +124,35 @@ long Analyzer::get_unique_word_count()
     return result.size();
 }
 
-long Analyzer::get_word_count_for_file(std::string file)
+std::vector<std::pair<std::string, long>> Analyzer::get_word_count_per_file()
 {
-    long count = 0;
+    std::vector<std::pair<std::string, long>> pairs;
 
-    for (auto const &stat : this->stats)
+    for (const auto &stat : this->stats)
     {
-        if (stat->get_file_path() == file)
-        {
-            count = stat->get_word_count();
-            break;
-        }
+        pairs.push_back(std::make_pair(stat->get_file_path(), stat->get_word_count()));
     }
 
-    return count;
+    return pairs;
 }
 
-long Analyzer::get_unique_word_count_for_file(std::string file)
+std::vector<std::pair<std::string, long>> Analyzer::get_unique_word_count_per_file()
 {
-    long count = 0;
+    std::vector<std::pair<std::string, long>> pairs;
 
-    for (auto const &stat : this->stats)
+    for (const auto &stat : this->stats)
     {
-        if (stat->get_file_path() == file)
-        {
-            count = stat->get_unqiue_word_count();
-            break;
-        }
+        pairs.push_back(std::make_pair(stat->get_file_path(), stat->get_unqiue_word_count()));
     }
 
-    return count;
+    return pairs;
 }
 
 std::vector<std::wstring> Analyzer::get_words()
 {
     std::vector<std::wstring> result;
 
-    for (auto const &stat : this->stats)
+    for (const auto &stat : this->stats)
     {
         std::vector<std::wstring> words = stat->get_words();
         result.reserve(result.size() + words.size());
@@ -180,108 +162,71 @@ std::vector<std::wstring> Analyzer::get_words()
     return result;
 }
 
-std::vector<std::pair<std::wstring, int>> Analyzer::generate_n_gram(int size)
+std::vector<Statistics::n_gram> Analyzer::generate_n_gram(int size)
 {
 
     // N-grams must be at least 1 word long
     if (size < 1)
     {
-        std::cerr << "N-grams must be at least 1 or more words long! Set size is: " << size << "\n";
-        throw "N-gram size was too small!";
+        throw std::invalid_argument("N-gram size was too small!");
     }
 
-    std::map<std::wstring, int> grams;
-    std::vector<std::wstring> words = this->get_words();
+    std::vector<Statistics::n_gram> sorter;
 
-    for (unsigned long i = 0; i < words.size() - size; ++i)
+    for (const auto &stat : stats)
     {
-        // Creates an n-gram from size number of words
-        std::wstring gram = words.at(i);
-        for (int j = 1; j < size; ++j)
+        for (auto gram : stat->get_n_grams(size))
         {
-            gram += L" " + words.at(i + j);
-        }
+            // Tries to find if n-gram is already present
+            auto cur_value = std::find_if(sorter.begin(), sorter.end(),
+                                          [gram](const Statistics::n_gram &comp) { return gram.value == comp.value; });
 
-        // If n-gram is new, it is inserted into the hashmap with 0 occurences
-        if (grams.find(gram) == grams.end())
-        {
-            grams.emplace(gram, 0);
+            // If not present, creates a new n-gram with new values
+            // Values calculated by Statistics are then forgotten
+            // If present, values are just added together
+            if (cur_value == sorter.end())
+            {
+                sorter.push_back(Statistics::n_gram{gram.value, gram.count});
+            }
+            else
+            {
+                cur_value->count = cur_value->count + gram.count;
+            }
         }
-
-        // Occurence is incremented
-        grams.at(gram) = grams.at(gram) + 1;
     }
 
-    // Converts the map into a vector of pairs for sorting by value.
-    // Pairs are then stored in descending order.
-    std::vector<std::pair<std::wstring, int>> sorter;
-    for (std::map<std::wstring, int>::iterator it = grams.begin(); it != grams.end(); ++it)
-    {
-        sorter.push_back(std::make_pair(it->first, it->second));
-    }
-    std::sort(sorter.begin(), sorter.end(), sortByValue);
+    // Sorts the vector by counts of n-gram occurences in descending order
+    std::sort(sorter.begin(), sorter.end(),
+              [](const Statistics::n_gram &a, const Statistics::n_gram &b) {
+                  return a.count > b.count;
+              });
 
     // Creates a subvector from the five most frequent n-grams
-    std::vector<std::pair<std::wstring, int>> result;
+    std::vector<Statistics::n_gram> result;
     std::copy(sorter.begin(), sorter.begin() + 5, std::back_inserter(result));
 
     return result;
 }
 
-std::vector<std::pair<std::wstring, int>> Analyzer::generate_n_gram_for_file(int size, std::string file)
+std::vector<std::pair<std::string, std::vector<Statistics::n_gram>>> Analyzer::generate_n_gram_per_file(int size)
 {
     // N-grams must be at least 1 word long
     if (size < 1)
     {
-        std::cerr << "N-grams must be at least 1 or more words long! Set size is: " << size << "\n";
-        throw "N-gram size was too small!";
+        throw std::invalid_argument("N-gram size was too small!");
     }
 
-    // Finds the statistics for corresponding file
-    Statistics *file_stat = nullptr;
-    for (auto const &stat : this->stats)
+    std::vector<std::pair<std::string, std::vector<Statistics::n_gram>>> result;
+
+    for (const auto &stat : stats)
     {
-        if (stat->get_file_path() == file)
-        {
-            file_stat = stat;
-            break;
-        }
+        // Gets file n-grams and picks the 5 most frequent
+        auto original = stat->get_n_grams(size);
+        std::vector<Statistics::n_gram> stat_grams;
+        std::copy(original.begin(), original.begin() + 5, std::back_inserter(stat_grams));
+
+        result.push_back(std::make_pair(stat->get_file_path(), stat_grams));
     }
-
-    std::vector<std::wstring> words = file_stat->get_words();
-    std::map<std::wstring, int> grams;
-
-    for (unsigned long i = 0; i < words.size() - size; ++i)
-    {
-        // Creates an n-gram from size number of words
-        std::wstring gram = words.at(i);
-        for (int j = 1; j < size; ++j)
-        {
-            gram += L" " + words.at(i + j);
-        }
-
-        // If n-gram is new, it is inserted into the hashmap with 0 occurences
-        if (grams.find(gram) == grams.end())
-        {
-            grams.emplace(gram, 0);
-        }
-
-        // Occurence is incremented
-        grams.at(gram) = grams.at(gram) + 1;
-    }
-
-    // Converts the map into a vector of pairs for sorting by value.
-    // Pairs are then stored in descending order.
-    std::vector<std::pair<std::wstring, int>> sorter;
-    for (std::map<std::wstring, int>::iterator it = grams.begin(); it != grams.end(); ++it)
-    {
-        sorter.push_back(std::make_pair(it->first, it->second));
-    }
-    std::sort(sorter.begin(), sorter.end(), sortByValue);
-
-    // Creates a subvector from the five most frequent n-grams
-    std::vector<std::pair<std::wstring, int>> result;
-    std::copy(sorter.begin(), sorter.begin() + 5, std::back_inserter(result));
 
     return result;
 }
@@ -290,6 +235,6 @@ void Analyzer::generate_word_cloud()
 {
 }
 
-void Analyzer::generate_word_cloud_for_file(std::string file)
+void Analyzer::generate_word_cloud_per_file()
 {
 }

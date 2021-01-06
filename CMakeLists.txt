@@ -6,6 +6,8 @@ set( CMAKE_CXX_STANDARD_REQUIRED ON )
 set( CMAKE_CXX_EXTENSIONS OFF )
 
 set(core-files
+        ./src/cmdline.hpp
+        ./src/cmdline.cpp
         ./src/analyzer.cpp
         ./src/analyzer.hpp
         ./src/statistics.cpp
@@ -20,7 +22,3 @@ if ( CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 endif()
 
 add_executable( textanalysis ${core-files} ./src/main.cpp )
-
-set ( THREADS_PREFER_PTHREAD_FLAG ON)
-find_package( Threads REQUIRED )
-target_link_libraries( textanalysis Threads::Threads )
