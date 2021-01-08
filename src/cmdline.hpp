@@ -17,6 +17,8 @@ struct CommandLineOptions
     bool ignore_case = false;
 
     int n_gram_size = INT32_MIN;
+    
+    bool word_cloud = false;
 };
 
 /**

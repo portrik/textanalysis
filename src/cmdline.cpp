@@ -94,6 +94,10 @@ CommandLineOptions parse_command_line(int argc, char *argv[])
         {
             options.per_file = true;
         }
+        else if (arg == "-c" || arg == "--cloud")
+        {
+            options.word_cloud = true;
+        }
         else if (arg == "-c" || arg == "--ignoreCase")
         {
             options.ignore_case = true;
