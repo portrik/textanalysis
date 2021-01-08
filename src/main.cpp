@@ -3,7 +3,6 @@
 #include "cmdline.hpp"
 #include "analyzer.hpp"
 
-// TODO: Word clouds
 // TODO: Threading and CMakeList
 
 int main(int argc, char *argv[])
@@ -19,19 +18,34 @@ int main(int argc, char *argv[])
                       << "\t-h,--help\t\t\tShow this help message\n"
                       << "\t-p,--perFile\t\t\tGenerate report per file. Off by default\n"
                       << "\t-c,--ignoreCase\t\t\tIgnore case sensitivity. False by default\n"
-                      << "\t-t,--target /file/path\t\tGenerates report into a text file with set path. Off by default\n"
+                      << "\t-t,--target /file/path\t\tGenerates report into a text file or a directory with set path (do not add filename extension). Off by default\n"
                       << "\t-n,--ngrams x\t\t\tGenerates ngrams of size x. x must be 1 or higher. Off by default\n"
                       << "\t-f,--filter x,y,z\t\tSet of words to filter out. Must be separated by \",\". Empty by default\n"
                       << "\t-ff,--fileFilter /file/path\tPath to a file with words to filter out. Each line must contain exactly one word. Empty by default\n"
                       << "\t-w,--words\t\t\tTurns off printing of number of words. On by default.\n"
-                      << "\t-u,--unique\t\tTurns off printing of number of unique words. On by default\n\n"
-                      << "\t-c, --cloud\t\tGenerates a word cloud image from set file(s). No other data is generated. Off by default.";
+                      << "\t-u,--unique\t\t\tTurns off printing of number of unique words. On by default\n\n"
+                      << "\t-c, --cloud\t\t\tGenerates a word cloud image from set file(s).\n\t\t\t\t\tTarget path path is then used as a file (do not add filename extension) or directory name for the output files.\n\t\t\t\t\tNo other data is generated. Off by default.\n";
 
             // No other execution happens after displaying help
             return 0;
         }
 
         Analyzer analyzer = Analyzer(options.source_path, options.filtered_words, options.ignore_case);
+
+        if (options.word_cloud)
+        {
+            if (options.per_file)
+            {
+                analyzer.generate_word_cloud_per_file(options.target_path);
+            }
+            else
+            {
+                analyzer.generate_word_cloud(options.target_path);
+            }
+
+            return 0;
+        }
+
         std::vector<std::wstring> analysis;
 
         if (options.per_file)
@@ -73,11 +87,6 @@ int main(int argc, char *argv[])
                     analysis.push_back(file_gram);
                 }
             }
-
-            if (options.word_cloud)
-            {
-                // Generate word cloud
-            }
         }
         else
         {
@@ -102,11 +111,6 @@ int main(int argc, char *argv[])
                 }
 
                 analysis.push_back(n_grams);
-            }
-
-            if (options.word_cloud)
-            {
-                // Generate word clouds
             }
         }
 

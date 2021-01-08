@@ -12,7 +12,8 @@ set(core-files
         ./src/analyzer.hpp
         ./src/statistics.cpp
         ./src/statistics.hpp
-        ./src/word_cloud.hpp)
+        ./src/word_cloud.hpp
+        ./src/word_cloud.cpp)
 
 if ( CMAKE_CXX_COMPILER_ID MATCHES "Clang|AppleClang|GNU")
     add_compile_options( -Wall -Wextra -Wunreachable-code -Wpedantic )

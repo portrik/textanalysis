@@ -102,14 +102,18 @@ public:
     /**
      * @brief  Generates a word cloud.
      * @note   Discards filtered out words.
+     * 
+     * @param target_path: Name of the output svg file
      */
-    void generate_word_cloud();
+    void generate_word_cloud(std::string target_path);
 
     /**
      * @brief  Generates a word clouds per file.
      * @note   Discards filtered out words.
+     * 
+     * @param directory_path: Name of the directory where output svg files will be written
      */
-    void generate_word_cloud_per_file();
+    void generate_word_cloud_per_file(std::string directory_path);
 
 private:
     /**

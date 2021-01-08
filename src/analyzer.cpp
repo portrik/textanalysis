@@ -1,9 +1,14 @@
+#include "analyzer.hpp"
+#include "word_cloud.hpp"
+
 #include <filesystem>
 #include <iostream>
 #include <stack>
 #include <regex>
 
-#include "analyzer.hpp"
+// Checks if threading is available and uses it accordingly
+//#ifdef __STDCPP_THREADS__
+//#endif
 
 namespace fs = std::filesystem;
 
@@ -231,10 +236,54 @@ std::vector<std::pair<std::string, std::vector<Statistics::n_gram>>> Analyzer::g
     return result;
 }
 
-void Analyzer::generate_word_cloud()
+void Analyzer::generate_word_cloud(std::string target_path)
 {
+    std::string file_path = (target_path == "") ? "word_cloud.svg" : target_path + ".svg";
+
+    create_word_cloud(get_words(), file_path);
 }
 
-void Analyzer::generate_word_cloud_per_file()
+void Analyzer::generate_word_cloud_per_file(std::string directory_path)
 {
+    try
+    {
+        std::string directory = (directory_path == "") ? "word_clouds" : directory_path;
+
+        if (!fs::is_directory(directory))
+        {
+            fs::create_directory(directory);
+        }
+
+        for (const auto &stat : stats)
+        {
+            std::string file_name = stat->get_file_path();
+
+            std::replace(file_name.begin(), file_name.end(), '/', '-');  // Replace UNIX slashes
+            std::replace(file_name.begin(), file_name.end(), '\\', '-'); // Replace Windows slashes
+            file_name += ".svg";
+
+            // Prevents filename from starting with -
+            if (file_name.at(0) == '.')
+            {
+                file_name.erase(0, 1);
+            }
+
+            // Prevents filename from starting with -
+            if (file_name.at(0) == '-')
+            {
+                file_name.erase(0, 1);
+            }
+
+            fs::path full_path(directory);
+            full_path /= file_name;
+
+            std::cout << stat->get_file_path() << "\n";
+
+            create_word_cloud(stat->get_words(), full_path);
+        }
+    }
+    catch (const std::exception &e)
+    {
+        throw std::runtime_error("Could not generate word clouds. Does the target directory exist?");
+    }
 }
