@@ -68,6 +68,10 @@
         "stack": "cpp",
         "codecvt": "cpp",
         "fstream": "cpp",
-        "regex": "cpp"
+        "regex": "cpp",
+        "thread": "cpp",
+        "filesystem": "cpp",
+        "numeric": "cpp",
+        "random": "cpp"
     }
 }
