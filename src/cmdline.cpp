@@ -2,10 +2,11 @@
 
 #include <regex>
 #include <fstream>
+#include <iostream>
 
 namespace fs = std::filesystem;
 
-std::vector<std::wstring> parse_word_filter(std::string words)
+std::vector<std::wstring> CommandLine::parse_word_filter(std::string words)
 {
     std::vector<std::wstring> result;
 
@@ -35,7 +36,7 @@ std::vector<std::wstring> parse_word_filter(std::string words)
     return result;
 }
 
-std::vector<std::wstring> parse_file_filter(std::string file_path)
+std::vector<std::wstring> CommandLine::parse_file_filter(std::string file_path)
 {
     std::vector<std::wstring> result;
 
@@ -60,9 +61,9 @@ std::vector<std::wstring> parse_file_filter(std::string file_path)
     return result;
 }
 
-CommandLineOptions parse_command_line(int argc, char *argv[])
+CommandLine::CommandLineOptions CommandLine::parse_command_line(int argc, char **argv)
 {
-    CommandLineOptions options;
+    CommandLine::CommandLineOptions options;
 
     if (argc < 2)
     {
@@ -98,7 +99,7 @@ CommandLineOptions parse_command_line(int argc, char *argv[])
         {
             options.word_cloud = true;
         }
-        else if (arg == "-c" || arg == "--ignoreCase")
+        else if (arg == "-i" || arg == "--ignoreCase")
         {
             options.ignore_case = true;
         }
@@ -114,12 +115,12 @@ CommandLineOptions parse_command_line(int argc, char *argv[])
         }
         else if ((arg == "-f" || arg == "--filter") && i + 1 < argc)
         {
-            options.filtered_words = parse_word_filter(std::string(argv[i + 1]));
+            options.filtered_words = CommandLine::parse_word_filter(std::string(argv[i + 1]));
             i += 1;
         }
         else if ((arg == "-ff" || arg == "--fileFilter") && i + 1 < argc)
         {
-            options.filtered_words = parse_file_filter(std::string(argv[i + 1]));
+            options.filtered_words = CommandLine::parse_file_filter(std::string(argv[i + 1]));
             i += 1;
         }
         else if (i > 1)
@@ -129,4 +130,20 @@ CommandLineOptions parse_command_line(int argc, char *argv[])
     }
 
     return options;
+}
+
+void CommandLine::show_help()
+{
+    std::cout << "Options of TextAnalysis:\n"
+              << "\t/file/path\t\t\tPath to a file or a directory to analyze. Required. Must be first argument.\n"
+              << "\t-h,--help\t\t\tShow this help message\n"
+              << "\t-p,--perFile\t\t\tGenerate report per file. Off by default\n"
+              << "\t-i,--ignoreCase\t\t\tIgnore case sensitivity. False by default\n"
+              << "\t-t,--target /file/path\t\tGenerates report into a text file or a directory with set path (do not add filename extension). Off by default\n"
+              << "\t-n,--ngrams x\t\t\tGenerates ngrams of size x. x must be 1 or higher. Off by default\n"
+              << "\t-w,--words\t\t\tTurns off printing of number of words. On by default.\n"
+              << "\t-u,--unique\t\t\tTurns off printing of number of unique words. On by default\n\n"
+              << "\t-f,--filter x,y,z\t\tSet of words to filter out. Must be separated by \",\". Empty by default\n"
+              << "\t-ff,--fileFilter /file/path\tPath to a file with words to filter out. Each line must contain exactly one word. Empty by default\n"
+              << "\t-c, --cloud\t\t\tGenerates a word cloud image from set file(s).\n\t\t\t\t\tTarget path path is then used as a file (do not add filename extension) or directory name for the output files.\n\t\t\t\t\tNo other data is generated. Off by default.\n";
 }

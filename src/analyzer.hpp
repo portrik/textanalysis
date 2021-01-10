@@ -1,12 +1,13 @@
-#pragma once
+#include "statistics.hpp"
+#include "word_cloud.hpp"
 
 #include <vector>
 #include <string>
 #include <map>
 
-#include "statistics.hpp"
-#include "word_cloud.hpp"
-
+/**
+ * @brief Class controling the analysis
+ */
 class Analyzer
 {
 private:
@@ -25,8 +26,8 @@ public:
      * @brief  Constructs ::wstring over either a path to a file or a path to a directory.
      * @note   Only text files are supported. Directories are searched recursively.
      * 
-     * @param  path: Path to a file or a directory
-     * @param case_sensitive: Should case be ignored?
+     * @param path              Path to a file or a directory
+     * @param case_sensitive    Should case be ignored?
      */
     Analyzer(std::string file_path, bool case_sensitive);
 
@@ -34,9 +35,9 @@ public:
      * @brief  Constructs ::wstring over either a path to a file or a path to a directory.
      * @note   Only text files are supported. Directories are searched recursively.
      * 
-     * @param  path: Path to a file or a directory
-     * @param  filter: Words to be filtered out of the analysis
-     * @param  case_sensitive: Should case be ignored?
+     * @param  path             Path to a file or a directory
+     * @param  filter           Words to be filtered out of the analysis
+     * @param  case_sensitive   Should case be ignored?
      */
     Analyzer(std::string path, std::vector<std::wstring> filter, bool case_sensitive);
 
@@ -45,7 +46,7 @@ public:
     /**
      * @brief  Sets the list of filtered out words.
      * 
-     * @param  filter: Vector of words to be filtered out
+     * @param  filter   Vector of words to be filtered out
      */
     void set_filters(std::vector<std::wstring> filter);
 
@@ -83,7 +84,7 @@ public:
      * @brief  Generates five most frequent n-grams.
      * @note   Discards filtered out words. Throws if set word is filtered out.
      * 
-     * @param  size: Size of the n-gram (n)
+     * @param  size Size of the n-gram (n)
      * 
      * @retval Vector of n_grams
      */
@@ -93,7 +94,7 @@ public:
      * @brief  Generates five most frequent n-grams per file.
      * @note   Discards filtered out words. Throws if set word is filtered out.
      * 
-     * @param  size: Size of the n-gram (n)
+     * @param  size Size of the n-gram (n)
      * 
      * @retval Vector of pairs with file path as first and vector of n_grams as second
      */
@@ -103,7 +104,7 @@ public:
      * @brief  Generates a word cloud.
      * @note   Discards filtered out words.
      * 
-     * @param target_path: Name of the output svg file
+     * @param target_path   Name of the output svg file
      */
     void generate_word_cloud(std::string target_path);
 
@@ -111,7 +112,7 @@ public:
      * @brief  Generates a word clouds per file.
      * @note   Discards filtered out words.
      * 
-     * @param directory_path: Name of the directory where output svg files will be written
+     * @param directory_path    Name of the directory where output svg files will be written
      */
     void generate_word_cloud_per_file(std::string directory_path);
 

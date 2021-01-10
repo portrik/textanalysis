@@ -1,30 +1,19 @@
-#include <iostream>
-
 #include "cmdline.hpp"
 #include "analyzer.hpp"
 
-// TODO: Threading and CMakeList
+#include <iostream>
+#include <codecvt>
+#include <fstream>
 
 int main(int argc, char *argv[])
 {
     try
     {
-        CommandLineOptions options = parse_command_line(argc, argv);
+        CommandLine::CommandLineOptions options = CommandLine::parse_command_line(argc, argv);
 
         if (options.show_help)
         {
-            std::cout << "Options of TextAnalysis:\n"
-                      << "\t/file/path\t\t\tPath to a file or a directory to analyze. Required. Must be first argument.\n"
-                      << "\t-h,--help\t\t\tShow this help message\n"
-                      << "\t-p,--perFile\t\t\tGenerate report per file. Off by default\n"
-                      << "\t-c,--ignoreCase\t\t\tIgnore case sensitivity. False by default\n"
-                      << "\t-t,--target /file/path\t\tGenerates report into a text file or a directory with set path (do not add filename extension). Off by default\n"
-                      << "\t-n,--ngrams x\t\t\tGenerates ngrams of size x. x must be 1 or higher. Off by default\n"
-                      << "\t-f,--filter x,y,z\t\tSet of words to filter out. Must be separated by \",\". Empty by default\n"
-                      << "\t-ff,--fileFilter /file/path\tPath to a file with words to filter out. Each line must contain exactly one word. Empty by default\n"
-                      << "\t-w,--words\t\t\tTurns off printing of number of words. On by default.\n"
-                      << "\t-u,--unique\t\t\tTurns off printing of number of unique words. On by default\n\n"
-                      << "\t-c, --cloud\t\t\tGenerates a word cloud image from set file(s).\n\t\t\t\t\tTarget path path is then used as a file (do not add filename extension) or directory name for the output files.\n\t\t\t\t\tNo other data is generated. Off by default.\n";
+            CommandLine::show_help();
 
             // No other execution happens after displaying help
             return 0;
@@ -32,6 +21,7 @@ int main(int argc, char *argv[])
 
         Analyzer analyzer = Analyzer(options.source_path, options.filtered_words, options.ignore_case);
 
+        // Generating word clouds
         if (options.word_cloud)
         {
             if (options.per_file)
@@ -43,11 +33,13 @@ int main(int argc, char *argv[])
                 analyzer.generate_word_cloud(options.target_path);
             }
 
+            // No other execution happens after generation of word clouds
             return 0;
         }
 
         std::vector<std::wstring> analysis;
 
+        // Generating analysis per file
         if (options.per_file)
         {
             if (options.print_words)
@@ -57,7 +49,7 @@ int main(int argc, char *argv[])
                 for (auto word_count : analyzer.get_word_count_per_file())
                 {
                     // File names are strings, thus needing conversion to wstring via iterator
-                    analysis.push_back(L"\t" + std::wstring(word_count.first.begin(), word_count.first.end()) + L"\t" + std::to_wstring(word_count.second) + L"\n");
+                    analysis.push_back(L"\t" + std::wstring(word_count.first.begin(), word_count.first.end()) + L"\t" + std::to_wstring(word_count.second));
                 }
             }
 
@@ -67,16 +59,18 @@ int main(int argc, char *argv[])
 
                 for (auto word_count : analyzer.get_unique_word_count_per_file())
                 {
-                    analysis.push_back(L"\t" + std::wstring(word_count.first.begin(), word_count.first.end()) + L"\t" + std::to_wstring(word_count.second) + L"\n");
+                    // File names are strings, thus needing conversion to wstring via iterator
+                    analysis.push_back(L"\t" + std::wstring(word_count.first.begin(), word_count.first.end()) + L"\t" + std::to_wstring(word_count.second));
                 }
             }
 
             if (options.n_gram_size > 0)
             {
-                analysis.push_back(L"5 most frequent " + std::to_wstring(options.n_gram_size) + L"-ngrams per file are:\n");
+                analysis.push_back(L"5 most frequent " + std::to_wstring(options.n_gram_size) + L"-ngrams per file are:");
 
                 for (auto file_data : analyzer.generate_n_gram_per_file(options.n_gram_size))
                 {
+                    // File names are strings, thus needing conversion to wstring via iterator
                     std::wstring file_gram = L"\t" + std::wstring(file_data.first.begin(), file_data.first.end()) + L"\t";
 
                     for (auto gram : file_data.second)
@@ -88,6 +82,7 @@ int main(int argc, char *argv[])
                 }
             }
         }
+        // Generates overall analysis
         else
         {
             if (options.print_words)
@@ -116,6 +111,23 @@ int main(int argc, char *argv[])
 
         if (options.target_path.size() > 0)
         {
+            try
+            {
+                std::wofstream file_stream(options.target_path);
+                std::locale loc(std::locale::classic(), new std::codecvt_utf8<wchar_t>);
+                file_stream.imbue(loc);
+
+                for (auto line : analysis)
+                {
+                    file_stream << line << "\n";
+                }
+
+                file_stream.close();
+            }
+            catch (const std::exception &e)
+            {
+                throw std::runtime_error("Could not write analysis to a file " + options.target_path + ".");
+            }
         }
         else
         {

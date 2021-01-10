@@ -1,8 +1,9 @@
-#pragma once
-
 #include <vector>
 #include <string>
 
+/**
+ * @brief Class representing word statistics for a file.
+ */
 class Statistics
 {
 private:
@@ -21,17 +22,17 @@ public:
     /**
      * @brief  Creates Statistics for a file.
      * 
-     * @param  file_path: Path to a file
-      *@param  case_sensitive: Should case be ignored?
+     * @param  file_path        Path to a file
+      *@param  case_sensitive   Should case be ignored?
      */
     Statistics(std::string file_path, bool case_sensitive);
 
     /**
      * @brief  Creates Statistics for a file with filter.
      * 
-     * @param  file_path: Path to a file
-     * @param  filter: Vector of words to filter out
-      *@param  case_sensitive: Should case be ignored?
+     * @param  file_path        Path to a file
+     * @param  filter           Vector of words to filter out
+      *@param  case_sensitive   Should case be ignored?
      */
     Statistics(std::string file_path, std::vector<std::wstring> filter, bool case_sensitive);
 
@@ -74,7 +75,7 @@ public:
     /**
      * @brief  Sets the filter vector for statistics.
      * 
-     * @param  filter: Words to be filtered out.
+     * @param  filter Words to be filtered out.
      */
     void set_filter(std::vector<std::wstring> filter);
 

@@ -6,10 +6,6 @@
 #include <stack>
 #include <regex>
 
-// Checks if threading is available and uses it accordingly
-//#ifdef __STDCPP_THREADS__
-//#endif
-
 namespace fs = std::filesystem;
 
 void Analyzer::load()
@@ -37,7 +33,7 @@ void Analyzer::load()
             }
             else if (fs::is_regular_file(path))
             {
-                stats.push_back(new Statistics(path, this->case_sensitive));
+                stats.push_back(new Statistics(path, this->filter, this->case_sensitive));
             }
         }
 
@@ -49,7 +45,7 @@ void Analyzer::load()
     }
     else
     {
-        // Not a valid path, should throw
+        // Not a valid path, stops loading
         throw std::invalid_argument("Supplied path \"" + this->source_path + "\" is not a valid file or directory path!");
     }
 }
@@ -117,9 +113,9 @@ long Analyzer::get_unique_word_count()
             // Temporary variables used to remove long line
             // And to enhance readibility
             bool is_not_duplicate = std::find(result.begin(), result.end(), word) == result.end();
-            bool is_unique = std::find(this->filter.begin(), this->filter.end(), word) == this->filter.end();
+            bool is_not_filtered = std::find(this->filter.begin(), this->filter.end(), word) == this->filter.end();
 
-            if (is_not_duplicate && is_unique)
+            if (is_not_duplicate && is_not_filtered)
             {
                 result.push_back(word);
             }
@@ -138,6 +134,11 @@ std::vector<std::pair<std::string, long>> Analyzer::get_word_count_per_file()
         pairs.push_back(std::make_pair(stat->get_file_path(), stat->get_word_count()));
     }
 
+    std::sort(pairs.begin(), pairs.end(),
+              [](const std::pair<std::string, long> &a, const std::pair<std::string, long> &b) {
+                  return a.first < b.first;
+              });
+
     return pairs;
 }
 
@@ -149,6 +150,11 @@ std::vector<std::pair<std::string, long>> Analyzer::get_unique_word_count_per_fi
     {
         pairs.push_back(std::make_pair(stat->get_file_path(), stat->get_unqiue_word_count()));
     }
+
+    std::sort(pairs.begin(), pairs.end(),
+              [](const std::pair<std::string, long> &a, const std::pair<std::string, long> &b) {
+                  return a.first < b.first;
+              });
 
     return pairs;
 }
@@ -233,6 +239,12 @@ std::vector<std::pair<std::string, std::vector<Statistics::n_gram>>> Analyzer::g
         result.push_back(std::make_pair(stat->get_file_path(), stat_grams));
     }
 
+    std::sort(result.begin(), result.end(),
+              [](const std::pair<std::string, std::vector<Statistics::n_gram>> &a,
+                 const std::pair<std::string, std::vector<Statistics::n_gram>> &b) {
+                  return a.first < b.first;
+              });
+
     return result;
 }
 
@@ -262,13 +274,13 @@ void Analyzer::generate_word_cloud_per_file(std::string directory_path)
             std::replace(file_name.begin(), file_name.end(), '\\', '-'); // Replace Windows slashes
             file_name += ".svg";
 
-            // Prevents filename from starting with -
+            // Prevents filename from starting with '.'
             if (file_name.at(0) == '.')
             {
                 file_name.erase(0, 1);
             }
 
-            // Prevents filename from starting with -
+            // Prevents filename from starting with '-'
             if (file_name.at(0) == '-')
             {
                 file_name.erase(0, 1);
@@ -276,8 +288,6 @@ void Analyzer::generate_word_cloud_per_file(std::string directory_path)
 
             fs::path full_path(directory);
             full_path /= file_name;
-
-            std::cout << stat->get_file_path() << "\n";
 
             create_word_cloud(stat->get_words(), full_path);
         }

@@ -1,3 +1,5 @@
+#include "statistics.hpp"
+
 #include <filesystem>
 #include <fstream>
 #include <codecvt>
@@ -5,8 +7,6 @@
 #include <map>
 #include <regex>
 #include <string>
-
-#include "statistics.hpp"
 
 namespace fs = std::filesystem;
 
@@ -50,9 +50,9 @@ int Statistics::get_unqiue_word_count()
         // Temporary variables used to remove long line
         // And to enhance readibility
         bool is_not_duplicate = std::find(result.begin(), result.end(), word) == result.end();
-        bool is_unique = std::find(this->filter.begin(), this->filter.end(), word) == this->filter.end();
+        bool is_not_filtered = std::find(this->filter.begin(), this->filter.end(), word) == this->filter.end();
 
-        if (is_not_duplicate && is_unique)
+        if (is_not_duplicate && is_not_filtered)
         {
             result.push_back(word);
         }
@@ -125,16 +125,19 @@ std::vector<std::wstring> Statistics::parse_file()
                 file_content += c;
             }
 
-            std::wregex delimiters(L"[^\\s.,:;!?()]+");
+            // Splits file content using a REGEX expression into separate words
+            std::wregex delimiters(L"[^\\.,:;!”„“=…?() \n\"]+");
             auto file_begin = std::wsregex_iterator(file_content.begin(), file_content.end(), delimiters);
             auto file_end = std::wsregex_iterator();
 
+            // Iterates over split words and adds them into a final vector
             for (std::wsregex_iterator it = file_begin; it != file_end; ++it)
             {
                 auto word = (*it).str();
 
                 if (this->case_sensitive)
                 {
+                    // Converts all characters to lower case
                     std::transform(word.begin(), word.end(), word.begin(), ::tolower);
                 }
 
@@ -143,14 +146,17 @@ std::vector<std::wstring> Statistics::parse_file()
         }
         catch (const std::exception &e)
         {
+            // Error during reading of a single file is not fatal error
+            // It could be 1 file out of 100, so user is only informed that the file could not be read.
             std::cerr << "File " << this->file_path << " could not be parsed due to an error!";
             std::cerr << e.what() << '\n';
         }
     }
     else
     {
-        std::cerr << "File " << this->file_path << " could not be parsed due to an error!";
-        throw "File " + this->file_path + " is not a valid text file!";
+        // Input path is not a regular file and thus cannot be read
+        // This should hopefully never happen
+        throw std::invalid_argument("File " + this->file_path + " is not a valid text file!");
     }
 
     return result;
