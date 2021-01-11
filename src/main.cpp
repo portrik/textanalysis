@@ -11,7 +11,8 @@ int main(int argc, char *argv[])
     {
         // Sets wcout encoding to UTF-8
         // otherwise some loaded characters would stop the standard output
-        std::locale loc(std::locale::classic(), new std::codecvt_utf8<wchar_t>);
+        // Unfortunately does not work on every platform or compiler
+        std::locale loc(std::locale::classic(), new std::codecvt_utf8<wchar_t>());
         std::wcout.imbue(loc);
 
         CommandLine::CommandLineOptions options = CommandLine::parse_command_line(argc, argv);

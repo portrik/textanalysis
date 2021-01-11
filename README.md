@@ -43,6 +43,8 @@ An error during parsing is not treated as a fatal error. An error message is dis
 
 **CommandLine** parses the command line input into **CommandLineOptions** which are then passed on to Analyzer or used in main. Invalid arguments are rejected and cause the program to exit. The same happens in case filtered words of a file with filtered words is formatted incorrectly.
 
+Not all compilers and terminals support displaying UTF-8 encoded characters. For example Clang does support UTF-8 standard output, while GCC does not. In case that n-gram is not being displayed on standard output, it is needed to use the `-t` argument to redirect the output into a file.
+
 ### Word Cloud
 
 Word Cloud handles creation of a SVG file with word cloud from words supplied by Analyzer. Words are weighted by number of their occurences and then set randomly into the SVG. Words are unfortunately going to be overlaping. This is because SVG Text is rendered differently on each platform and it is thus impossible to calculate the size of text before rendering. Current overlap calculations are only approximations.

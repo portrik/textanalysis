@@ -4,6 +4,7 @@
 #include <fstream>
 #include <codecvt>
 #include <random>
+#include <algorithm>
 #include <map>
 
 // Define max width and height in which a word can be generated

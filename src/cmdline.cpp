@@ -140,6 +140,8 @@ void CommandLine::show_help()
               << "\t-p,--perFile\t\t\tGenerate report per file. Off by default\n"
               << "\t-i,--ignoreCase\t\t\tIgnore case sensitivity. False by default\n"
               << "\t-t,--target /file/path\t\tGenerates report into a text file or a directory with set path (do not add filename extension). Off by default\n"
+              << "\t\t\t\t\tIt may be needed to use target file for n-grams due to\n"
+              << "\t\t\t\t\tinability of some terminals and compilers to display UTF-8 encoded characters.\n"
               << "\t-n,--ngrams x\t\t\tGenerates ngrams of size x. x must be 1 or higher. Off by default\n"
               << "\t-w,--words\t\t\tTurns off printing of number of words. On by default.\n"
               << "\t-u,--unique\t\t\tTurns off printing of number of unique words. On by default\n\n"
