@@ -126,6 +126,8 @@ std::vector<std::wstring> Statistics::parse_file()
                 file_content += c;
             }
 
+            f.close();
+
             // Splits file content using a REGEX expression into separate words
             std::wregex delimiters(L"[^\\.,:;!”„“=…?() \n\"]+");
             auto file_begin = std::wsregex_iterator(file_content.begin(), file_content.end(), delimiters);

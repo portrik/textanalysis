@@ -148,7 +148,7 @@ namespace SVG
             std::vector<std::wstring> image;
 
             image.push_back(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-            image.push_back(L"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 1920 1080\">");
+            image.push_back(L"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 1920 1080\" style=\"background-color:white\">");
 
             image.push_back(L"<style>");
             for (auto &className : classes)

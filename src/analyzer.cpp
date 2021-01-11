@@ -74,7 +74,7 @@ Analyzer::~Analyzer()
 {
     for (auto stat : this->stats)
     {
-        stat->~Statistics();
+        delete stat;
     }
 }
 

@@ -9,12 +9,6 @@ int main(int argc, char *argv[])
 {
     try
     {
-        // Sets wcout encoding to UTF-8
-        // otherwise some loaded characters would stop the standard output
-        // Unfortunately does not work on every platform or compiler
-        std::locale loc(std::locale::classic(), new std::codecvt_utf8<wchar_t>());
-        std::wcout.imbue(loc);
-
         CommandLine::CommandLineOptions options = CommandLine::parse_command_line(argc, argv);
 
         if (options.show_help)
@@ -42,6 +36,11 @@ int main(int argc, char *argv[])
             // No other execution happens after generation of word clouds
             return 0;
         }
+
+        // Sets wcout encoding to UTF-8
+        // otherwise some loaded characters would stop the standard output
+        // Unfortunately does not work on every platform or compiler
+        std::locale loc(std::locale::classic(), new std::codecvt_utf8<wchar_t>());
 
         std::vector<std::wstring> analysis;
 
@@ -136,10 +135,15 @@ int main(int argc, char *argv[])
         }
         else
         {
+            std::wcout.imbue(loc);
+
             for (auto line : analysis)
             {
                 std::wcout << line << "\n";
             }
+
+            // Locale has to be reset after printing to prevent memory leaks
+            std::wcout.imbue(std::locale::classic());
         }
     }
     catch (const std::exception &e)
