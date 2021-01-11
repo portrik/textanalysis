@@ -21,7 +21,7 @@ void Analyzer::load()
             auto path = files.top();
             files.pop();
 
-            // Handles only regular files or directories that match the regular expression
+            // Handles only regular files or directories
             // The rest of the is ignored
             if (fs::is_directory(path))
             {
@@ -134,6 +134,7 @@ std::vector<std::pair<std::string, long>> Analyzer::get_word_count_per_file()
         pairs.push_back(std::make_pair(stat->get_file_path(), stat->get_word_count()));
     }
 
+    // Sorts the word counts by file name
     std::sort(pairs.begin(), pairs.end(),
               [](const std::pair<std::string, long> &a, const std::pair<std::string, long> &b) {
                   return a.first < b.first;
@@ -151,6 +152,7 @@ std::vector<std::pair<std::string, long>> Analyzer::get_unique_word_count_per_fi
         pairs.push_back(std::make_pair(stat->get_file_path(), stat->get_unqiue_word_count()));
     }
 
+    // Sorts the word counts by file name
     std::sort(pairs.begin(), pairs.end(),
               [](const std::pair<std::string, long> &a, const std::pair<std::string, long> &b) {
                   return a.first < b.first;
@@ -193,7 +195,7 @@ std::vector<Statistics::n_gram> Analyzer::generate_n_gram(int size)
                                           [gram](const Statistics::n_gram &comp) { return gram.value == comp.value; });
 
             // If not present, creates a new n-gram with new values
-            // Values calculated by Statistics are then forgotten
+            // Values calculated by Statistics are then not kept
             // If present, values are just added together
             if (cur_value == sorter.end())
             {
@@ -201,7 +203,7 @@ std::vector<Statistics::n_gram> Analyzer::generate_n_gram(int size)
             }
             else
             {
-                cur_value->count = cur_value->count + gram.count;
+                cur_value->count += gram.count;
             }
         }
     }
@@ -239,6 +241,7 @@ std::vector<std::pair<std::string, std::vector<Statistics::n_gram>>> Analyzer::g
         result.push_back(std::make_pair(stat->get_file_path(), stat_grams));
     }
 
+    // Sorts n-grams by file name
     std::sort(result.begin(), result.end(),
               [](const std::pair<std::string, std::vector<Statistics::n_gram>> &a,
                  const std::pair<std::string, std::vector<Statistics::n_gram>> &b) {

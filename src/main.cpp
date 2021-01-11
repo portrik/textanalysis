@@ -9,6 +9,11 @@ int main(int argc, char *argv[])
 {
     try
     {
+        // Sets wcout encoding to UTF-8
+        // otherwise some loaded characters would stop the standard output
+        std::locale loc(std::locale::classic(), new std::codecvt_utf8<wchar_t>);
+        std::wcout.imbue(loc);
+
         CommandLine::CommandLineOptions options = CommandLine::parse_command_line(argc, argv);
 
         if (options.show_help)
@@ -114,7 +119,6 @@ int main(int argc, char *argv[])
             try
             {
                 std::wofstream file_stream(options.target_path);
-                std::locale loc(std::locale::classic(), new std::codecvt_utf8<wchar_t>);
                 file_stream.imbue(loc);
 
                 for (auto line : analysis)

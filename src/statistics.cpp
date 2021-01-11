@@ -32,6 +32,7 @@ int Statistics::get_word_count()
 
     for (auto const &word : this->words)
     {
+        // Only using non-filtered words
         if (std::find(this->filter.begin(), this->filter.end(), word) == this->filter.end())
         {
             result.push_back(word);

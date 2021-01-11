@@ -63,4 +63,4 @@ Example input data can be found inside `./examples/input`. The expected values, 
 | the_egg_czech.txt   | 1006 (1006)              | 540 (492)                       | řekl jsem(9), zeptal ses(6), já jsem(6), řekl jsi(5), ve skutečnosti(4)                        |
 | the_egg_english.txt | 997 (997)                | 424 (377)                       | i said(14), you said(8), you asked(5), all the(4), for you(4)                                  |
 | the_egg_spanish.txt | 924 (924)                | 476 (422)                       | lo que(5), el tiempo(4), de los(3), en el(3), es el(3)                                         |
-| **Overall**         | **7471 (7471)**          | **1988 (1729)**                 | sstop that(8), that pigeon(8), for one(6), pigeon stop(6), around the(6)                       |
+| **Overall**         | **7470 (7470)**          | **1987 (1728)**                 | sit amet(18), i said(14), strip steak(11), ball tip(10), pork loin(9)                          |

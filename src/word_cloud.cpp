@@ -31,7 +31,7 @@ std::vector<std::pair<std::wstring, long>> get_weighted_words(std::vector<std::w
         }
     }
 
-    // Orded the weighted words into pairs and sort them in descending order
+    // Order the weighted words into pairs and sort them in descending order by weight
     std::vector<std::pair<std::wstring, long>> ordered;
     for (std::map<std::wstring, long>::iterator it = weighted_words.begin(); it != weighted_words.end(); ++it)
     {
@@ -48,7 +48,7 @@ std::vector<std::pair<std::wstring, long>> get_weighted_words(std::vector<std::w
 SVG::Body generate_text(std::vector<std::pair<std::wstring, long>> words)
 {
     // Biggest possible word weight
-    // Used to calculate size of words
+    // Used to calculate font size of words
     float max = words.at(0).second;
 
     // Main SVG body element
@@ -73,7 +73,6 @@ SVG::Body generate_text(std::vector<std::pair<std::wstring, long>> words)
     int x = 0;
     int y = 0;
 
-    // Word pair is used to determine word size
     std::pair<std::wstring, long> word;
     SVG::ClassName currentClass = classes.at(0);
 
@@ -84,7 +83,7 @@ SVG::Body generate_text(std::vector<std::pair<std::wstring, long>> words)
     {
         word = words.at(position);
 
-        // Changes word class based on weight
+        // Changes class based on word weight
         if ((word.second / max) * 100 > max * 0.9)
         {
             currentClass = classes.at(0);
@@ -111,6 +110,7 @@ SVG::Body generate_text(std::vector<std::pair<std::wstring, long>> words)
         std::pair<int, int> overlap = body.get_overlap(text);
         while (overlap.first > -1)
         {
+            // First trying to move it up along the Y axis
             text.y += currentClass.font_size;
 
             // If y is outside defined values, new random position is generated
@@ -126,9 +126,9 @@ SVG::Body generate_text(std::vector<std::pair<std::wstring, long>> words)
         body.add_child(text);
 
         // Position is changed at the end of the loop
-        // To not start new loop with overflown position in the vector
+        // to not start new loop with overflown position in the vector
         ++position;
-    } while ((word.second / max * 100) > (max * 0.2) && position < words.size()); // Only displays top 70 % of words
+    } while ((word.second / max * 100) > (max * 0.2) && position < words.size()); // Only displays top 80 % of words
 
     return body;
 }
@@ -139,10 +139,11 @@ void create_word_cloud(std::vector<std::wstring> words, std::string file_path)
     {
         SVG::Body body = generate_text(get_weighted_words(words));
 
-        std::vector<std::wstring> image_content = body.to_wstring();
         std::wofstream file_stream(file_path);
         std::locale loc(std::locale::classic(), new std::codecvt_utf8<wchar_t>);
         file_stream.imbue(loc);
+
+        std::vector<std::wstring> image_content = body.to_wstring();
 
         for (auto line : image_content)
         {

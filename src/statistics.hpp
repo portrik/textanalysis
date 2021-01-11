@@ -13,6 +13,7 @@ private:
     bool case_sensitive;
 
 public:
+    // Simple struct to get rid of long lines with std::pair
     struct n_gram
     {
         std::wstring value;
