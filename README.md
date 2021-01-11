@@ -23,7 +23,7 @@ The input is a path to a file or a directory. The outputs are statistics with a 
 
 ## Implementation
 
-The project is targeting C++ 17 and includes only single threaded implementation. Description below is top-level only and more details are available as comments alongisde the source code.
+The project is targeting C++ 17 and includes only single threaded implementation. Description below is top-level only and more details are available as comments alongisde the source code. The project has no external dependencies and is built purely on standard library of C++ 17.
 
 The project is structured into three distinct parts:
 
